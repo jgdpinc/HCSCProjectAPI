@@ -1,0 +1,105 @@
+dotnet new webapi -n HCSCProjectAPI
+cd HCSCProjectAPI
+using System;
+
+namespace HCSCProjectAPI.Models
+{
+    public class Member
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public DateTime Dob { get; set; }
+        public string PlanType { get; set; }
+        public bool Active { get; set; }
+    }
+
+    public class Provider
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Specialty { get; set; }
+        public string Location { get; set; }
+    }
+
+    public class Claim
+    {
+        public int Id { get; set; }
+        public int MemberId { get; set; }
+        public int ProviderId { get; set; }
+        public DateTime ServiceDate { get; set; }
+        public float Amount { get; set; }
+        public string Status { get; set; }
+    }
+}
+mkdir Controllers
+using Microsoft.AspNetCore.Mvc;
+using HCSCProjectAPI.Models;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace HCSCProjectAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class MembersController : ControllerBase
+    {
+        private static List<Member> members = new List<Member>();
+
+        [HttpGet]
+        public ActionResult<IEnumerable<Member>> GetMembers()
+        {
+            return Ok(members);
+        }
+
+        [HttpPost]
+        public ActionResult<Member> CreateMember(Member member)
+        {
+            members.Add(member);
+            return CreatedAtAction(nameof(GetMembers), new { id = member.Id }, member);
+        }
+    }
+
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ProvidersController : ControllerBase
+    {
+        private static List<Provider> providers = new List<Provider>();
+
+        [HttpGet]
+        public ActionResult<IEnumerable<Provider>> GetProviders()
+        {
+            return Ok(providers);
+        }
+
+        [HttpPost]
+        public ActionResult<Provider> CreateProvider(Provider provider)
+        {
+            providers.Add(provider);
+            return CreatedAtAction(nameof(GetProviders), new { id = provider.Id }, provider);
+        }
+    }
+
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ClaimsController : ControllerBase
+    {
+        private static List<Claim> claims = new List<Claim>();
+
+        [HttpGet]
+        public ActionResult<IEnumerable<Claim>> GetClaims()
+        {
+            return Ok(claims);
+        }
+
+        [HttpPost]
+        public ActionResult<Claim> CreateClaim(Claim claim)
+        {
+            claims.Add(claim);
+            return CreatedAtAction(nameof(GetClaims), new { id = claim.Id }, claim);
+        }
+    }
+}
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddControllers();
+}
